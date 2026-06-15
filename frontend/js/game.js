@@ -220,6 +220,12 @@ function onEnemyShot(coord) {
 
   // Verifica derrota
   const hitsOnMe = [...myHits].filter(c => myShips.has(c));
+
+  if (isHit) {
+    // Publica que um navio foi afundado (Arduino apaga um LED vermelho)
+    mqttPublishNavioAfundado();
+  }
+
   if (hitsOnMe.length >= TOTAL_SHIPS) {
     // Publica fim de jogo — inimigo ganhou
     const winner = window.PLAYER_ID === 'j1' ? 'j2' : 'j1';

@@ -53,6 +53,9 @@ function initMQTT(playerId) {
     // Anuncia online
     client.publish(TOPICS.meuStatus, 'ONLINE', { qos: 1, retain: true });
 
+    // Publica status da sala como aguardando (Arduino pisca enquanto espera)
+    client.publish(TOPICS.salaStatus, 'AGUARDANDO_PLAYERS', { qos: 1, retain: true });
+
     // Avisa o game.js que conectou
     onMQTTConnected(PLAYER_ID);
   });
@@ -154,4 +157,11 @@ function mqttPublishGameOver(winner) {
   const msg = `FIM_${winner.toUpperCase()}_GANHOU`;
   client.publish(TOPICS.salaStatus, msg, { qos: 1, retain: true });
   log(`MQTT → fim de jogo: ${msg}`, 'good');
+}
+
+// ── PUBLICAR NAVIO AFUNDADO ───────────────────
+// Chamada pelo game.js quando inimigo acerta um navio meu
+function mqttPublishNavioAfundado() {
+  client.publish(TOPICS.salaStatus.replace("status", "jogadores/" + PLAYER_ID + "/vida"), "NAVIO_AFUNDADO", { qos: 1 });
+  log("MQTT → NAVIO_AFUNDADO publicado", "good");
 }
