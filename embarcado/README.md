@@ -53,5 +53,5 @@ pip install pyserial paho-mqtt
 python ponte_mqtt.py
 
 ``` 
-![Imagem do arduino](<img width="1600" height="739" alt="ARDUINO" src="https://github.com/user-attachments/assets/8cd2f66b-4355-4e15-ac7e-a2eb54d501a4" />
-)
+<img width="1600" height="739" alt="ARDUINO" src="https://github.com/user-attachments/assets/8cd2f66b-4355-4e15-ac7e-a2eb54d501a4" />
+
