@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batalha Naval — N461</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ── TELA DE LOGIN ── -->
+  <div id="login-screen">
+    <div id="login-box">
+      <h1>⚓ Batalha Naval</h1>
+      <p>N461 · Sistemas Multimídia e Distribuídos · MQTT</p>
+      <div id="login-title">Escolha seu jogador</div>
+      <div id="login-buttons">
+        <button class="btn btn-player" onclick="selectPlayer('j1')">
+          <span class="player-icon">①</span>
+          <span>Jogador 1</span>
+        </button>
+        <button class="btn btn-player" onclick="selectPlayer('j2')">
+          <span class="player-icon">②</span>
+          <span>Jogador 2</span>
+        </button>
+      </div>
+      <div id="login-status"></div>
+    </div>
+  </div>
+
+  <!-- ── TELA DO JOGO ── -->
+  <div id="game-screen" style="display:none">
+
+    <header>
+      <h1>⚓ Batalha Naval</h1>
+      <p id="player-badge"></p>
+    </header>
+
+    <div id="status-bar">
+      <div class="dot"></div>
+      <span id="status-text">Conectando ao broker...</span>
+    </div>
+
+    <div id="phase-bar">
+      <div class="phase-step active" id="ph-position">01 · POSICIONAR</div>
+      <div class="phase-step"        id="ph-battle">02 · BATALHA</div>
+      <div class="phase-step"        id="ph-end">03 · FIM</div>
+    </div>
+
+    <div class="boards">
+
+      <div class="board-panel">
+        <div class="board-title mine">▣ Meus Navios</div>
+        <div class="grid-wrap">
+          <div class="col-labels" id="my-cols"></div>
+          <div class="row-labels" id="my-rows"></div>
+          <div class="grid mine-grid" id="my-grid"></div>
+        </div>
+        <div class="board-stats">
+          <span><span class="stat-dot stat-ship"></span><span id="my-ships-count">0</span> navios</span>
+          <span><span class="stat-dot stat-hit"></span><span id="my-hits">0</span> acertos sofridos</span>
+        </div>
+      </div>
+
+      <div class="board-panel">
+        <div class="board-title enemy">✕ Navios Inimigos</div>
+        <div class="grid-wrap">
+          <div class="col-labels" id="en-cols"></div>
+          <div class="row-labels" id="en-rows"></div>
+          <div class="grid enemy-grid" id="enemy-grid"></div>
+        </div>
+        <div class="board-stats">
+          <span><span class="stat-dot stat-hit"></span><span id="en-hits">0</span> acertos</span>
+          <span><span class="stat-dot stat-miss"></span><span id="en-miss">0</span> erros</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="action-area">
+      <div id="pending-shot"></div>
+      <button class="btn btn-primary" id="btn-ready" onclick="handleReady()">PRONTO — Confirmar posicionamento</button>
+      <button class="btn btn-danger"  id="btn-fire"  onclick="handleFire()" style="display:none">🎯 CONFIRMAR TIRO (botão ESP32)</button>
+    </div>
+
+    <div id="log">
+      <div class="log-entry info">
+        <span class="ts">00:00</span>
+        <span class="msg">Sistema inicializado. Escolha seu jogador.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── OVERLAY DE VITÓRIA/DERROTA ── -->
+  <div id="overlay">
+    <h2 id="overlay-title"></h2>
+    <button class="btn btn-primary" onclick="resetGame()">↺ JOGAR NOVAMENTE</button>
+  </div>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/mqtt.js"></script>
+
+</body>
+</html>

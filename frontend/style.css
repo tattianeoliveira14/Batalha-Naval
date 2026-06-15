@@ -1,0 +1,462 @@
+/* ─────────────────────────────────────────
+   BATALHA NAVAL — style.css
+   N461 · Sistemas Multimídia e Distribuídos
+   ───────────────────────────────────────── */
+
+:root {
+  --bg:           #050d1a;
+  --panel:        #0a1628;
+  --border:       #1a3a5c;
+  --accent:       #00d4ff;
+  --accent2:      #ff6b35;
+  --hit:          #e63946;
+  --miss:         #457b9d;
+  --ship:         #2d6a4f;
+  --ship-hover:   #40916c;
+  --enemy-hover:  #1a3a5c;
+  --text:         #caf0f8;
+  --text-dim:     #4a7a9b;
+  --grid-line:    #0d2137;
+  --glow:         0 0 12px rgba(0,212,255,0.4);
+  --glow-red:     0 0 12px rgba(230,57,70,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+  background-image:
+    radial-gradient(ellipse at 20% 0%,   rgba(0,80,120,0.15)  0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(0,40,80,0.2)    0%, transparent 60%);
+}
+
+/* ── HEADER ──────────────────────────────── */
+header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  text-shadow: var(--glow);
+  text-transform: uppercase;
+}
+header p {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* ── STATUS BAR ──────────────────────────── */
+#status-bar {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--glow);
+}
+#status-bar .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── FASE ────────────────────────────────── */
+#phase-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.phase-step {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 5px 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  transition: all 0.3s;
+}
+.phase-step.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-shadow: var(--glow);
+  background: rgba(0,212,255,0.06);
+}
+.phase-step.done {
+  border-color: var(--ship);
+  color: var(--ship-hover);
+}
+
+/* ── BOARDS ──────────────────────────────── */
+.boards {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.board-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.board-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+.board-title.mine  { color: var(--accent);  border-color: var(--accent);  text-shadow: var(--glow); }
+.board-title.enemy { color: var(--accent2); border-color: var(--accent2); text-shadow: var(--glow-red); }
+
+/* ── GRID ────────────────────────────────── */
+.grid-wrap {
+  position: relative;
+  padding-left: 28px;
+  padding-top: 28px;
+}
+.col-labels, .row-labels {
+  position: absolute;
+  display: flex;
+}
+.col-labels { top: 0; left: 28px; flex-direction: row; }
+.row-labels { left: 0; top: 28px; flex-direction: column; }
+.col-labels span, .row-labels span {
+  width: 52px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+.row-labels span { width: 28px; height: 52px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 52px);
+  grid-template-rows:    repeat(5, 52px);
+  gap: 3px;
+  background: var(--grid-line);
+  border: 1px solid var(--border);
+  padding: 3px;
+}
+
+/* ── CÉLULAS ─────────────────────────────── */
+.cell {
+  background: var(--panel);
+  border: 1px solid #0d2a42;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.cell::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.cell:hover::after { opacity: 1; }
+
+/* Meu tabuleiro */
+.mine-grid .cell:hover:not(.ship):not(.hit):not(.miss) {
+  background: var(--ship-hover);
+  border-color: #52b788;
+  transform: scale(1.04);
+  box-shadow: 0 0 8px rgba(64,145,108,0.5);
+}
+.mine-grid .cell.ship {
+  background: var(--ship);
+  border-color: #40916c;
+  box-shadow: inset 0 0 6px rgba(64,145,108,0.3);
+}
+.mine-grid .cell.ship::before {
+  content: '▣';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: rgba(82,183,136,0.5);
+}
+
+/* Tabuleiro inimigo */
+.enemy-grid .cell { cursor: crosshair; }
+.enemy-grid .cell:hover:not(.hit):not(.miss) {
+  background: var(--enemy-hover);
+  border-color: var(--accent2);
+  transform: scale(1.04);
+  box-shadow: 0 0 8px rgba(255,107,53,0.4);
+}
+
+/* Acerto */
+.cell.hit {
+  background: rgba(230,57,70,0.25);
+  border-color: var(--hit);
+  box-shadow: var(--glow-red), inset 0 0 8px rgba(230,57,70,0.3);
+  cursor: default;
+  animation: hit-flash 0.4s ease;
+}
+.cell.hit::before {
+  content: '✕';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: var(--hit);
+  text-shadow: var(--glow-red);
+}
+@keyframes hit-flash {
+  0%   { background: rgba(230,57,70,0.8); }
+  100% { background: rgba(230,57,70,0.25); }
+}
+
+/* Água */
+.cell.miss {
+  background: rgba(69,123,157,0.15);
+  border-color: var(--miss);
+  cursor: default;
+  animation: miss-ripple 0.3s ease;
+}
+.cell.miss::before {
+  content: '●';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; color: var(--miss);
+  opacity: 0.7;
+}
+@keyframes miss-ripple {
+  0%   { transform: scale(0.9); opacity: 0.5; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+/* ── CONTADORES ──────────────────────────── */
+.board-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+.board-stats span { display: flex; align-items: center; gap: 5px; }
+.stat-dot  { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.stat-hit  { background: var(--hit); }
+.stat-miss { background: var(--miss); }
+.stat-ship { background: var(--ship-hover); }
+
+/* ── AÇÕES ───────────────────────────────── */
+#action-area {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.btn {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 12px 32px;
+  border: 1px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+}
+.btn-primary { border-color: var(--accent);  color: var(--accent); }
+.btn-primary:hover { background: rgba(0,212,255,0.1); box-shadow: var(--glow); }
+.btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-danger  { border-color: var(--accent2); color: var(--accent2); }
+.btn-danger:hover  { background: rgba(255,107,53,0.1);  box-shadow: var(--glow-red); }
+
+#pending-shot {
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  min-height: 20px;
+}
+
+/* ── LOG ─────────────────────────────────── */
+#log {
+  margin-top: 28px;
+  width: 100%;
+  max-width: 680px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  max-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+.log-entry { display: flex; gap: 8px; }
+.log-entry .ts  { color: var(--border); flex-shrink: 0; }
+.log-entry.good .msg { color: var(--accent); }
+.log-entry.bad  .msg { color: var(--hit); }
+.log-entry.info .msg { color: var(--text-dim); }
+
+/* ── OVERLAY ─────────────────────────────── */
+#overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(5,13,26,0.92);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+#overlay.show { display: flex; }
+#overlay h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  animation: glow-pulse 1s ease-in-out infinite;
+}
+#overlay h2.win  { color: var(--accent); text-shadow: var(--glow); }
+#overlay h2.lose { color: var(--hit);    text-shadow: var(--glow-red); }
+@keyframes glow-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+
+/* ── TELA DE LOGIN ───────────────────────────── */
+#login-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  background-image:
+    radial-gradient(ellipse at 20% 0%,   rgba(0,80,120,0.15)  0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(0,40,80,0.2)    0%, transparent 60%);
+}
+
+#login-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 0 40px rgba(0,212,255,0.08);
+  min-width: 340px;
+}
+
+#login-box h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  text-shadow: var(--glow);
+  text-transform: uppercase;
+}
+
+#login-box p {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  margin-top: -12px;
+}
+
+#login-title {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+#login-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-player {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 18px 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+.btn-player:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,212,255,0.06);
+  box-shadow: var(--glow);
+  transform: translateY(-2px);
+}
+.btn-player:nth-child(2):hover {
+  border-color: var(--accent2);
+  color: var(--accent2);
+  background: rgba(255,107,53,0.06);
+  box-shadow: var(--glow-red);
+}
+
+.player-icon {
+  font-size: 1.8rem;
+}
+
+#login-status {
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  min-height: 20px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+#player-badge {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
